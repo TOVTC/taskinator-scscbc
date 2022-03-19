@@ -17,7 +17,6 @@ var taskFormHandler = function(event) {
     }
     //check if editing by verifying whether form has a data task id
     var isEdit = formEl.hasAttribute("data-task-id");
-    console.log(isEdit);
     //has data attribute so get task id and call function to complete edit
     if (isEdit) {
         var taskId = formEl.getAttribute("data-task-id");
@@ -55,6 +54,8 @@ var createTaskEl = function(taskDataObj){
     taskDataObj.id = taskIdCounter;
     //adds any content between the parentheses to the end of the specified array
     tasks.push(taskDataObj);
+    //update the tasks array
+    saveTasks();
     //increase task counter for next unique id
     taskIdCounter++;
 }
@@ -110,7 +111,6 @@ var taskButtonHandler = function(event) {
 };
 
 var editTask = function(taskId) {
-    console.log("editing task #" + taskId);
     //get task list item element
     var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
     //get content from task name and type
@@ -136,6 +136,8 @@ var completeEditTask = function(taskName, taskType, taskId) {
         }
     };
     alert("Task Updated!");
+    //update the tasks array
+    saveTasks();
     //reset the form
     formEl.removeAttribute("data-task-id");
     document.querySelector("#save-task").textContent = "Add Task";
@@ -155,10 +157,11 @@ var deleteTask = function(taskId) {
     }
     //reassign tasks array to be the same as updatedTaskArr
     tasks = updatedTaskArr;
+    //update tasks array
+    saveTasks();
 };
 
 var taskStatusChangeHandler = function(event) {
-    console.log(event.target, event.target.getAttribute("data-task-id"));
     //get the task item's id
     var taskId = event.target.getAttribute("data-task-id");
     //get the currently selected option's value and convert to lowercase
@@ -177,9 +180,14 @@ var taskStatusChangeHandler = function(event) {
         if (tasks[i].id === parseInt(taskId)) {
             tasks[i].status = statusValue;
         }
-        console.log(tasks);
     }
+    //update tasks array
+    saveTasks();
 };
+
+var saveTasks = function() {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
 
 //"click" cannot be used as the event because the event listener is assigned to the entire form, so "submit" is used instead for click and enter
 formEl.addEventListener("submit", taskFormHandler);
